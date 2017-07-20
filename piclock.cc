@@ -143,18 +143,28 @@ bool LoadTGA(TextureImage *texture, const char *filename)			// Loads A TGA File 
 }
 
 void drawPicture(Canvas *canvas, TextureImage *texture, int x, int y)
-{
-	//canvas()->SetPixel(x, y, c, c, c);
+{	
 	int cx;
 	int cy;
+	long c=0;
 
-	for (cy=0 ; cy<texture->height ; cy+=3)
+	for (cy=texture->height ; cy>0 ; cy--) // Y is reversed in TGA
 	{
-		for (cx=0 ; cx<texture->width ; cx+=3)
-		{
-			long c = cx+(cy*texture->width);
-			//canvas->SetPixel(cx, cy, texture->imageData[c], texture->imageData[c], texture->imageData[c]);
-			canvas->SetPixel(cx, cy, texture->imageData[c], texture->imageData[c+1], texture->imageData[c+2]);
+		for (cx=0 ; cx<texture->width ; cx++)
+		{		
+							
+			float r = texture->imageData[c];
+			float g = texture->imageData[c+1];
+			float b = texture->imageData[c+2];
+			float a = texture->imageData[c+3] * 254;
+			
+			r = (r * a) + (0 * (1.0 - a));
+			g = (g * a) + (0 * (1.0 - a));
+			b = (b * a) + (0 * (1.0 - a));
+			
+
+			canvas->SetPixel(cx, cy, r, g, b);
+			c+=4;
 		}
 	}	
 }
@@ -174,7 +184,7 @@ public:
 		const int height = canvas()->height() - 1;	      
 
 		// Main system time
-		DrawText(canvas(), main_font, 1, 1 + main_font.baseline(), fcolor, &fbg_color, getTimeString());
+		//DrawText(canvas(), main_font, 1, 1 + main_font.baseline(), fcolor, &fbg_color, getTimeString());
 
 		// Temperarure and humidity
 		DrawText(canvas(), temphum_font, 85, 1 + temphum_font.baseline(), Color(0, 0, 254), &fbg_color, "23C");    
